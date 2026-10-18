@@ -34,7 +34,7 @@ public class Administrador {
         System.out.println("La transacción " + tx.getIdTransaccion() + " ha sido marcada como SOSPECHOSA.");
     }
 
-    // 5. Revertir transacción (ejemplo para depósitos)
+    // 5. Revertir transacción
     public void revertirTransaccion(Transaccion tx, Cuenta cuenta, String idReverso) {
         if (tx.getTipo().equals("DEPOSITO")) {
             cuenta.retirar(tx.getMonto());
@@ -56,7 +56,7 @@ public class Administrador {
         Transaccion tx = new Transaccion(idTx, cuenta, monto, "DEPOSITO");
         if (cuenta.isActiva()) {
             cuenta.registrarTransaccion(tx);
-            System.out.println("Depósito de $" + monto + " procesado. Saldo actual: $" + cuenta.getSaldo());
+            System.out.println("Depósito de $" + String.format("%.2f", monto) + " procesado. Saldo actual: $" + String.format("%.2f", cuenta.getSaldo()));
         }
         return tx;
     }

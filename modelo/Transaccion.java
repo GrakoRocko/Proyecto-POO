@@ -25,6 +25,6 @@ public class Transaccion {
     @Override
     public String toString() {
         String estadoSospechoso = esSospechosa ? " [SOSPECHOSA]" : "";
-        return "Tx: " + idTransaccion + " | Tipo: " + tipo + " | Monto: $" + monto + " | Cuenta: " + cuenta.getNumeroCuenta() + estadoSospechoso;
+        return "Tx: " + idTransaccion + " | Tipo: " + tipo + " | Monto: $" + String.format("%.2f", monto) + " | Cuenta: " + cuenta.getNumeroCuenta() + estadoSospechoso;
     }
 }
