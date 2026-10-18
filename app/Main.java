@@ -13,9 +13,9 @@ public class Main {
 
         // Hacer un deposito
         System.out.println("\n*** PROCESAR MOVIMIENTOS ***");
-        Transaccion tx1 = admin.procesarDeposito("TX-001", cuenta1, 2000.0);
+        Transaccion tx1 = admin.procesarDeposito("TX-001", cuenta1, 2000.00);
         System.out.println("Deposito: " + tx1);
-        Transaccion tx2 = admin.procesarDeposito("TX-002", cuenta1, 15000.0); // Una muy grande
+        Transaccion tx2 = admin.procesarDeposito("TX-002", cuenta1, 15000.00); // Una muy grande
 
         // Se detcta como una transacción sospechosa
         System.out.println("\n*** REVISIÓN ADMINISTRATIVA ***");
@@ -30,13 +30,13 @@ public class Main {
 
         // Ajustamos el límite de crédito
         System.out.println("\n*** ACTUALIZAR LÍMITE DE CRÉDITO ***");
-        admin.cambiarLimiteCredito(cuenta1.getTitular(), 25000.0);
+        admin.cambiarLimiteCredito(cuenta1.getTitular(), 25000.00);
 
         // Cerramos la cuenta
         System.out.println("\n*** CERRAR CUENTA ***");
         admin.cerrarCuenta(cuenta1);
 
         // Validamos que la cuenta se haya cerrado haciendo un deposito
-        admin.procesarDeposito("TX-003", cuenta1, 500.0);
+        admin.procesarDeposito("TX-003", cuenta1, 500.00);
     }
 }
