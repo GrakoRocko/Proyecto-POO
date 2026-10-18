@@ -13,7 +13,7 @@ public class Cuenta {
         this.numeroCuenta = numeroCuenta;
         this.titular = titular;
         this.saldo = 0.0;
-        this.activa = true; // Al crearla, está abierta
+        this.activa = true;
         this.historial = new ArrayList<>();
     }
 
