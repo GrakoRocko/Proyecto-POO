@@ -12,3 +12,4 @@ Para probar el proyecto en la Terminal de sistemas basados en Unix los pasos son
 2. Ubicarse en la carpeta raíz del proyecto descargado
 3. Compilar el código ejecutando el comando `javac app/*.java modelo/*.java servicio/*.java`
 4. Ejecutar el programa con el comando `java app.Main`
+> **Nota:** Debido a que el programa es estático el resultado siempre será el mismo en cada ejecución. 
