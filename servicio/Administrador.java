@@ -40,14 +40,14 @@ public class Administrador {
             cuenta.retirar(tx.getMonto());
             Transaccion reverso = new Transaccion(idReverso, cuenta, tx.getMonto(), "REVERSO");
             cuenta.registrarTransaccion(reverso);
-            System.out.println("Transacción " + tx.getIdTransaccion() + " revertida. Nuevo saldo: $" + cuenta.getSaldo());
+            System.out.println("Transacción " + tx.getIdTransaccion() + " revertida. Nuevo saldo: $" + String.format("%.2f", cuenta.getSaldo()));
         }
     }
 
     // 6. Cambiar límite de crédito
     public void cambiarLimiteCredito(Cliente cliente, double nuevoLimite) {
         cliente.setLimiteCredito(nuevoLimite);
-        System.out.println("El límite de crédito de " + cliente.getNombre() + " se actualizó a $" + nuevoLimite);
+        System.out.println("El límite de crédito de " + cliente.getNombre() + " se actualizó a $" + String.format("%.2f", nuevoLimite));
     }
 
     // Procesar un depósito normal
