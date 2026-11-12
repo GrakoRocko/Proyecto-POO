@@ -1,55 +1,141 @@
 package modelo;
+
+import excepciones.SaldoInsuficienteException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+/** Clase base: una cuenta bancaria genérica. */
 public class Cuenta {
-    private String numeroCuenta;
-    private Cliente titular;
+    private final String numeroCuenta;
+    private final Cliente titular;
     private double saldo;
     private boolean activa;
-    private List<Transaccion> historial;
+    private final List<Transaccion> historialValidas;
+    private final List<Transaccion> historialRechazadas;
 
     public Cuenta(String numeroCuenta, Cliente titular) {
-        this.numeroCuenta = numeroCuenta;
+        if (numeroCuenta == null || numeroCuenta.trim().isEmpty()) {
+            throw new IllegalArgumentException("El número de cuenta no puede estar vacío.");
+        }
+        if (titular == null) {
+            throw new IllegalArgumentException("La cuenta debe tener un titular.");
+        }
+        this.numeroCuenta = numeroCuenta.trim();
         this.titular = titular;
         this.saldo = 0.0;
         this.activa = true;
-        this.historial = new ArrayList<>();
+        this.historialValidas = new ArrayList<>();
+        this.historialRechazadas = new ArrayList<>();
     }
 
     public String getNumeroCuenta() { return numeroCuenta; }
     public Cliente getTitular() { return titular; }
     public double getSaldo() { return saldo; }
     public boolean isActiva() { return activa; }
-    public List<Transaccion> getHistorial() { return historial; }
 
-    public void setActiva(boolean activa) { this.activa = activa; }
-
-    public void registrarTransaccion(Transaccion tx) {
-        this.historial.add(tx);
+    public List<Transaccion> getHistorialValidas() {
+        return Collections.unmodifiableList(historialValidas);
     }
 
-    public void depositar(double monto) {
-        if (!activa) {
-            System.out.println("Error: La cuenta " + numeroCuenta + " está cerrada.");
-            return;
+    public List<Transaccion> getHistorialRechazadas() {
+        return Collections.unmodifiableList(historialRechazadas);
+    }
+
+    public void cerrar() { this.activa = false; }
+
+    // ---- Métodos polimórficos (se sobrescriben en las subclases) ----
+
+    /** Comisión que cobra la cuenta por un retiro. La cuenta base no cobra. */
+    public double calcularComision(double monto) {
+        return 0.0;
+    }
+
+    /** Descripción de las condiciones de la cuenta. */
+    public String describirCondiciones() {
+        return "Cuenta básica: sin comisión por retiros.";
+    }
+
+    // ---- Operaciones ----
+
+    public Transaccion depositar(double monto) {
+        validarOperacion(TipoTransaccion.DEPOSITO, monto);
+        saldo += monto;
+        Transaccion tx = new Transaccion(this, TipoTransaccion.DEPOSITO, monto, 0.0);
+        historialValidas.add(tx);
+        return tx;
+    }
+
+    public Transaccion retirar(double monto) throws SaldoInsuficienteException {
+        validarOperacion(TipoTransaccion.RETIRO, monto);
+        double comision = calcularComision(monto);
+        double total = monto + comision;
+        if (saldo < total) {
+            String motivo = "Saldo insuficiente (se requieren $" + String.format("%.2f", total)
+                    + " y hay $" + String.format("%.2f", saldo) + ").";
+            registrarRechazo(TipoTransaccion.RETIRO, monto, comision, motivo);
+            throw new SaldoInsuficienteException(motivo);
         }
-        if (monto > 0) {
-            this.saldo += monto;
-        } else {
-            System.out.println("El monto a depositar debe ser positivo.");
+        saldo -= total;
+        Transaccion tx = new Transaccion(this, TipoTransaccion.RETIRO, monto, comision);
+        historialValidas.add(tx);
+        return tx;
+    }
+
+    /** Revierte una transacción válida. Cada transacción solo puede revertirse una vez. */
+    public Transaccion revertir(Transaccion original) throws SaldoInsuficienteException {
+        if (original == null || original.getCuenta() != this
+                || !historialValidas.contains(original)) {
+            throw new IllegalArgumentException("La transacción no pertenece a esta cuenta o no es válida.");
+        }
+        validarOperacion(TipoTransaccion.REVERSO, original.getMonto());
+        if (original.getTipo() == TipoTransaccion.REVERSO) {
+            rechazarEstado(original, "No se puede revertir un reverso.");
+        }
+        if (original.isRevertida()) {
+            rechazarEstado(original, "La transacción " + original.getIdTransaccion()
+                    + " ya fue revertida; solo puede revertirse una vez.");
+        }
+
+        if (original.getTipo() == TipoTransaccion.DEPOSITO) {
+            if (saldo < original.getMonto()) {
+                String motivo = "Saldo insuficiente para revertir el depósito (hay $"
+                        + String.format("%.2f", saldo) + ").";
+                registrarRechazo(TipoTransaccion.REVERSO, original.getMonto(), 0.0, motivo);
+                throw new SaldoInsuficienteException(motivo);
+            }
+            saldo -= original.getMonto();
+        } else { // RETIRO: se devuelve el monto y la comisión cobrada
+            saldo += original.getMonto() + original.getComision();
+        }
+
+        original.setRevertida(true);
+        Transaccion reverso = new Transaccion(this, TipoTransaccion.REVERSO, original.getMonto(), 0.0);
+        historialValidas.add(reverso);
+        return reverso;
+    }
+
+    // ---- Validaciones privadas (se ejecutan ANTES de modificar el saldo) ----
+
+    private void validarOperacion(TipoTransaccion tipo, double monto) {
+        if (!activa) {
+            String motivo = "La cuenta " + numeroCuenta + " está cerrada.";
+            registrarRechazo(tipo, monto, 0.0, motivo);
+            throw new IllegalStateException(motivo);
+        }
+        if (!(monto > 0) || Double.isInfinite(monto)) {
+            String motivo = "El monto debe ser un número positivo.";
+            registrarRechazo(tipo, monto, 0.0, motivo);
+            throw new IllegalArgumentException(motivo);
         }
     }
 
-    public void retirar(double monto) {
-        if (!activa) {
-            System.out.println("Error: La cuenta " + numeroCuenta + " está cerrada.");
-            return;
-        }
-        if (monto > 0 && this.saldo >= monto) {
-            this.saldo -= monto;
-        } else {
-            System.out.println("Saldo insuficiente o monto inválido.");
-        }
+    private void rechazarEstado(Transaccion original, String motivo) {
+        registrarRechazo(TipoTransaccion.REVERSO, original.getMonto(), 0.0, motivo);
+        throw new IllegalStateException(motivo);
+    }
+
+    private void registrarRechazo(TipoTransaccion tipo, double monto, double comision, String motivo) {
+        historialRechazadas.add(new Transaccion(this, tipo, monto, comision, motivo));
     }
 }
