@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** Clase base: una cuenta bancaria genérica. */
 public class Cuenta {
     private final String numeroCuenta;
     private final Cliente titular;
@@ -16,7 +15,7 @@ public class Cuenta {
 
     public Cuenta(String numeroCuenta, Cliente titular) {
         if (numeroCuenta == null || numeroCuenta.trim().isEmpty()) {
-            throw new IllegalArgumentException("El número de cuenta no puede estar vacío.");
+            throw new IllegalArgumentException("El número de cuenta no puede estar vacío");
         }
         if (titular == null) {
             throw new IllegalArgumentException("La cuenta debe tener un titular.");
@@ -44,19 +43,14 @@ public class Cuenta {
 
     public void cerrar() { this.activa = false; }
 
-    // ---- Métodos polimórficos (se sobrescriben en las subclases) ----
-
-    /** Comisión que cobra la cuenta por un retiro. La cuenta base no cobra. */
+    // Comisión que cobra la cuenta por un retiro
     public double calcularComision(double monto) {
         return 0.0;
     }
 
-    /** Descripción de las condiciones de la cuenta. */
     public String describirCondiciones() {
-        return "Cuenta básica: sin comisión por retiros.";
+        return "Cuenta básica sin comisión por retiros";
     }
-
-    // ---- Operaciones ----
 
     public Transaccion depositar(double monto) {
         validarOperacion(TipoTransaccion.DEPOSITO, monto);
@@ -82,30 +76,30 @@ public class Cuenta {
         return tx;
     }
 
-    /** Revierte una transacción válida. Cada transacción solo puede revertirse una vez. */
+    // Revierte una transacción
     public Transaccion revertir(Transaccion original) throws SaldoInsuficienteException {
         if (original == null || original.getCuenta() != this
                 || !historialValidas.contains(original)) {
-            throw new IllegalArgumentException("La transacción no pertenece a esta cuenta o no es válida.");
+            throw new IllegalArgumentException("La transacción no se pudo completar");
         }
         validarOperacion(TipoTransaccion.REVERSO, original.getMonto());
         if (original.getTipo() == TipoTransaccion.REVERSO) {
-            rechazarEstado(original, "No se puede revertir un reverso.");
+            rechazarEstado(original, "No se puede revertir");
         }
         if (original.isRevertida()) {
             rechazarEstado(original, "La transacción " + original.getIdTransaccion()
-                    + " ya fue revertida; solo puede revertirse una vez.");
+                    + " ya fue revertida");
         }
 
         if (original.getTipo() == TipoTransaccion.DEPOSITO) {
             if (saldo < original.getMonto()) {
-                String motivo = "Saldo insuficiente para revertir el depósito (hay $"
-                        + String.format("%.2f", saldo) + ").";
+                String motivo = "Saldo insuficiente para revertir el depósito la cuenta solo tiene $"
+                        + String.format("%.2f", saldo) + ")";
                 registrarRechazo(TipoTransaccion.REVERSO, original.getMonto(), 0.0, motivo);
                 throw new SaldoInsuficienteException(motivo);
             }
             saldo -= original.getMonto();
-        } else { // RETIRO: se devuelve el monto y la comisión cobrada
+        } else {
             saldo += original.getMonto() + original.getComision();
         }
 
@@ -115,16 +109,14 @@ public class Cuenta {
         return reverso;
     }
 
-    // ---- Validaciones privadas (se ejecutan ANTES de modificar el saldo) ----
-
     private void validarOperacion(TipoTransaccion tipo, double monto) {
         if (!activa) {
-            String motivo = "La cuenta " + numeroCuenta + " está cerrada.";
+            String motivo = "La cuenta " + numeroCuenta + " está cerrada";
             registrarRechazo(tipo, monto, 0.0, motivo);
             throw new IllegalStateException(motivo);
         }
         if (!(monto > 0) || Double.isInfinite(monto)) {
-            String motivo = "El monto debe ser un número positivo.";
+            String motivo = "El monto debe ser un número positivo";
             registrarRechazo(tipo, monto, 0.0, motivo);
             throw new IllegalArgumentException(motivo);
         }

@@ -1,6 +1,5 @@
 package modelo;
 
-/** Subclase: una cuenta de ahorro desincentiva los retiros con una comisión del 2%. */
 public class CuentaAhorro extends Cuenta {
     private static final double PORCENTAJE_COMISION = 0.02;
 
@@ -15,6 +14,6 @@ public class CuentaAhorro extends Cuenta {
 
     @Override
     public String describirCondiciones() {
-        return "Cuenta de ahorro: comisión del 2% sobre cada retiro.";
+        return "Cuenta de ahorro --> comisión del 2% sobre cada retiro";
     }
 }

@@ -9,14 +9,13 @@ import modelo.Transaccion;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Servicio con las operaciones del rol administrador. Guarda las cuentas en memoria. */
 public class Administrador {
     private final Map<String, Cuenta> cuentas = new LinkedHashMap<>();
 
     public Cuenta abrirCuenta(String tipo, String numero, String idCliente,
                               String nombreCliente, double limiteCredito) {
         if (numero == null || cuentas.containsKey(numero.trim())) {
-            throw new IllegalArgumentException("Ya existe una cuenta con el número indicado.");
+            throw new IllegalArgumentException("Ya existe una cuenta con este número");
         }
         Cliente cliente = new Cliente(idCliente, nombreCliente, limiteCredito);
         Cuenta cuenta;
@@ -34,7 +33,7 @@ public class Administrador {
     public Cuenta buscarCuenta(String numero) {
         Cuenta cuenta = (numero == null) ? null : cuentas.get(numero.trim());
         if (cuenta == null) {
-            throw new IllegalArgumentException("No existe la cuenta " + numero + ".");
+            throw new IllegalArgumentException("No existe la cuenta " + numero);
         }
         return cuenta;
     }
@@ -80,7 +79,7 @@ public class Administrador {
         for (Transaccion tx : cuenta.getHistorialValidas()) {
             System.out.println("  " + tx);
         }
-        System.out.println("Intentos INVÁLIDOS (rechazados):");
+        System.out.println("Intentos INVÁLIDOS:");
         if (cuenta.getHistorialRechazadas().isEmpty()) {
             System.out.println("  (ninguno)");
         }
@@ -97,6 +96,6 @@ public class Administrador {
             }
         }
         throw new IllegalArgumentException("No existe la transacción válida " + idTransaccion
-                + " en la cuenta " + cuenta.getNumeroCuenta() + ".");
+                + " en la cuenta " + cuenta.getNumeroCuenta());
     }
 }

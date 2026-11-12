@@ -1,6 +1,6 @@
 package modelo;
 
-/** Subclase: una cuenta de nómina cobra una comisión fija por retiro. */
+//Cuenta de nómina cobra una comisión fija por retiro
 public class CuentaNomina extends Cuenta {
     private static final double COMISION_FIJA = 5.0;
 
@@ -15,6 +15,6 @@ public class CuentaNomina extends Cuenta {
 
     @Override
     public String describirCondiciones() {
-        return "Cuenta de nómina: comisión fija de $5.00 por retiro.";
+        return "Cuenta de nómina --> comisión fija de $5.00 por retiro";
     }
 }

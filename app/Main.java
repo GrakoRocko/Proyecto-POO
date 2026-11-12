@@ -26,12 +26,11 @@ public class Main {
                     case 7: cambiarLimite(); break;
                     case 8: cerrarCuenta(); break;
                     case 9: compararComisiones(); break;
-                    case 0: salir = true; System.out.println("Hasta luego."); break;
-                    default: System.out.println("Opción fuera del menú (usa un número del 0 al 9).");
+                    case 0: salir = true; System.out.println("Hasta luego mi GOAT"); break;
+                    default: System.out.println("E R R X R Digita una opción valida");
                 }
             } catch (NumberFormatException e) {
-                // Va antes que IllegalArgumentException porque es su subclase
-                System.out.println("Error de formato: escribe un número válido (ejemplo: 1500.50).");
+                System.out.println("Escribe un número válido");
             } catch (IllegalArgumentException e) {
                 System.out.println("Dato inválido: " + e.getMessage());
             } catch (IllegalStateException e) {
@@ -39,13 +38,13 @@ public class Main {
             } catch (SaldoInsuficienteException e) {
                 System.out.println("Operación rechazada: " + e.getMessage());
             } finally {
-                System.out.println("Intento finalizado.");
+                System.out.println("Intento finalizado");
             }
         }
     }
 
     private static void mostrarMenu() {
-        System.out.println("\n===== BANCO DIGITAL - ADMINISTRADOR =====");
+        System.out.println("\n----- BANCO KBBU - ADMINISTRADOR -----");
         System.out.println("1. Abrir cuenta");
         System.out.println("2. Depositar");
         System.out.println("3. Retirar");
@@ -54,7 +53,7 @@ public class Main {
         System.out.println("6. Ver historial");
         System.out.println("7. Cambiar límite de crédito");
         System.out.println("8. Cerrar cuenta");
-        System.out.println("9. Comparar comisiones de retiro (polimorfismo)");
+        System.out.println("9. Comparar comisiones de retiro");
         System.out.println("0. Salir");
     }
 
@@ -71,10 +70,10 @@ public class Main {
         } else if (tipo.equals("2")) {
             nombreTipo = "NOMINA";
         } else {
-            throw new IllegalArgumentException("Tipo de cuenta no válido; elige 1 o 2.");
+            throw new IllegalArgumentException("Digita una opción valida (1 o 2)");
         }
         String numero = leer("Número de cuenta: ");
-        String idCliente = leer("Id del cliente: ");
+        String idCliente = leer("ID del cliente: ");
         String nombre = leer("Nombre del cliente: ");
         double limite = Double.parseDouble(leer("Límite de crédito: "));
         Cuenta cuenta = admin.abrirCuenta(nombreTipo, numero, idCliente, nombre, limite);
@@ -100,15 +99,15 @@ public class Main {
 
     private static void revertir() throws SaldoInsuficienteException {
         String numero = leer("Número de cuenta: ");
-        String id = leer("Id de la transacción a revertir (ej. TX-001): ");
+        String id = leer("ID de la transacción a revertir: ");
         Transaccion reverso = admin.revertirTransaccion(numero, id);
-        System.out.println("Transacción " + id.trim() + " revertida. " + reverso);
+        System.out.println("Transacción " + id.trim() + " revertida " + reverso);
         System.out.println("Saldo actual: $" + String.format("%.2f", admin.buscarCuenta(numero).getSaldo()));
     }
 
     private static void marcarSospechosa() {
         String numero = leer("Número de cuenta: ");
-        String id = leer("Id de la transacción (ej. TX-001): ");
+        String id = leer("ID de la transacción: ");
         Transaccion tx = admin.marcarSospechosa(numero, id);
         System.out.println("Marcada como SOSPECHOSA: " + tx);
     }
@@ -117,29 +116,28 @@ public class Main {
         String numero = leer("Número de cuenta: ");
         double nuevo = Double.parseDouble(leer("Nuevo límite de crédito: "));
         admin.cambiarLimiteCredito(numero, nuevo);
-        System.out.println("Límite de crédito actualizado a $" + String.format("%.2f", nuevo) + ".");
+        System.out.println("Límite de crédito actualizado a $" + String.format("%.2f", nuevo));
     }
 
     private static void cerrarCuenta() {
-        String numero = leer("Número de cuenta a cerrar: ");
+        String numero = leer("Digite el numero de cuenta: ");
         admin.cerrarCuenta(numero);
-        System.out.println("La cuenta " + numero.trim() + " ha sido cerrada.");
+        System.out.println("La cuenta " + numero.trim() + " se cerro correctamente");
     }
 
-    /** Polimorfismo: la referencia es de tipo Cuenta, pero se ejecuta la versión de cada subclase. */
     private static void compararComisiones() {
     double monto = Double.parseDouble(leer("Monto del retiro a simular: "));
     boolean hayActivas = false;
-    for (Cuenta c : admin.getCuentas().values()) { // referencia de tipo base
+    for (Cuenta c : admin.getCuentas().values()) {
         if (!c.isActiva()) {
-            continue; // las cuentas cerradas no participan en la comparación
+            continue; 
         }
         hayActivas = true;
-        System.out.println(c.getNumeroCuenta() + " [" + c.getClass().getSimpleName() + "] -> comisión: $"
+        System.out.println(c.getNumeroCuenta() + " [" + c.getClass().getSimpleName() + "] --> comisión: $"
                 + String.format("%.2f", c.calcularComision(monto)) + " | " + c.describirCondiciones());
     }
     if (!hayActivas) {
-        System.out.println("No hay cuentas activas para comparar. Abre una cuenta primero.");
+        System.out.println("No hay cuentas activas para comparar primero abre una cuenta");
     }
 }
 }

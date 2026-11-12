@@ -8,16 +8,16 @@ public class Transaccion {
     private final TipoTransaccion tipo;
     private final double monto;
     private final double comision;
-    private final String motivoRechazo; // null cuando la transacción fue exitosa
+    private final String motivoRechazo;
     private boolean sospechosa;
     private boolean revertida;
 
-    // Transacción exitosa
+    // Cuando la transacción sea exitosa
     public Transaccion(Cuenta cuenta, TipoTransaccion tipo, double monto, double comision) {
         this(cuenta, tipo, monto, comision, null);
     }
 
-    // Transacción rechazada (intento inválido)
+    // Cuando la transacción sea rechazada
     public Transaccion(Cuenta cuenta, TipoTransaccion tipo, double monto, double comision, String motivoRechazo) {
         this.cuenta = cuenta;
         this.tipo = tipo;
