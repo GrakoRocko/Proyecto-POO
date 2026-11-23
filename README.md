@@ -42,7 +42,7 @@ Para compilar y ejecutar en la terminal (PowerShell):
 ### Cómo usar el menú
 Se escribe el número de la opción y se responden los datos que pide el programa. Al terminar cada operación se imprime "Intento finalizado" y vuelve a aparecer el menú. Un dato incorrecto no cierra el programa, se muestra el error y el programa sigue ejecutandose. La opción `0` termina el programa.
 
-**Datos de ejemplo** (se capturan con la opción 1):
+**Datos de ejemplo**
 
 | Cuenta | Tipo | Id del cliente | Nombre | Límite de crédito |
 |--------|------|----------------|--------|-------------------|
