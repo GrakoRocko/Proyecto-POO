@@ -15,6 +15,9 @@ Simulación en consola del rol **administrador** de un banco digital. Los datos 
 
 **Herramientas:** VS Code y PowerShell en Windows. No se usan bibliotecas externas, patrones de diseño ni hilos.
 
+### Presentación
+Link del Canva: https://canva.link/37quyxi797ruhjo 
+
 ### Estructura del proyecto
 ```
 proyecto/
